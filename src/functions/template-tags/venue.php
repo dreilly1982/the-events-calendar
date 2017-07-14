@@ -527,4 +527,18 @@ if ( class_exists( 'Tribe__Events__Main' ) ) {
 		 */
 		return apply_filters( 'tribe_events_get_venue_single_line_address', $venue, $event_id, $link );
 	}
+
+	function tribe_address_is_hidden( $postId = null ) {
+        $output    = false;
+        $postId    = Tribe__Events__Main::postIdHelper( $postId );
+        $post_type = get_post_type( $postId );
+
+        if ( $post_type == Tribe__Events__Main::POSTTYPE ) {
+            $output = tribe_is_truthy( get_post_meta( $postId, '_EventHideAddress', 1 ) );
+        } elseif ( $post_type == Tribe__Events__Main::VENUE_POST_TYPE ) {
+            $output = tribe_is_truthy( get_post_meta( $postId, '_VenueHideAddress', 1 ) );
+        }
+
+        return apply_filters( 'tribe_address_is_hidden', $output );
+    }
 }

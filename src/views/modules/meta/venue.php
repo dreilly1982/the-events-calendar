@@ -27,7 +27,11 @@ $website = tribe_get_venue_website_link();
 		<?php if ( tribe_address_exists() ) : ?>
 			<dd class="tribe-venue-location">
 				<address class="tribe-events-address">
-					<?php echo tribe_get_full_address(); ?>
+                    <?php if ( tribe_address_is_hidden() ) : ?>
+                        <?php echo "Address is private."; ?>
+                    <?php else : ?>
+					    <?php echo tribe_get_full_address(); ?>
+                    <?php endif; ?>
 
 					<?php if ( tribe_show_google_map_link() ) : ?>
 						<?php echo tribe_get_map_link_html(); ?>

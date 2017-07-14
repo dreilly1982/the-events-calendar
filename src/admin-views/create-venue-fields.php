@@ -15,6 +15,7 @@ if ( ! $_POST ) {
 	$_VenueZip              = tribe_get_zip();
 	$google_map_link_toggle = get_post_meta( $postId, '_EventShowMapLink', true );
 	$google_map_toggle      = tribe_embed_google_map( $postId );
+	$address_is_hidden        = tribe_address_is_hidden( $postId );
 
 	//If we just saved use those values from $_POST
 } elseif ( ! empty( $_POST ) ) {
@@ -47,6 +48,7 @@ if ( ! $_POST ) {
 	$_VenueState            = isset( $_POST['venue']['State'] ) ? esc_attr( $_POST['venue']['State'] ) : '';
 	$google_map_link_toggle = isset( $_POST['EventShowMapLink'] ) ? esc_attr( $_POST['EventShowMapLink'] ) : '';
 	$google_map_toggle      = isset( $_POST['EventShowMap'] ) ? esc_attr( $_POST['EventShowMap'] ) : '';
+	$address_is_hidden      = isset( $_POST['EventIsHidden'] ) ? esc_attr( $_POST['EventIsHidden']) : '';
 }
 ?>
 <tr class="linked-post venue tribe-linked-type-venue-address">
@@ -195,10 +197,27 @@ if ( ! is_admin() ) {
 	return;
 }
 
+$address_is_hidden = false;
 $google_map_toggle = false;
 $google_map_link_toggle = false;
 
 if ( empty( $post->post_type ) || $post->post_type != Tribe__Events__Main::VENUE_POST_TYPE ) {
+    $venue_is_hidden = ( tribe_address_is_hidden( $post->ID) || get_post_status( $post->ID ) == 'auto-draft' ) ? true : false;
+    ?>
+    <tr id="address_hidden_toggle" class="remain-visible tribe-linked-type-venue-hiddenaddress">
+        <td class="tribe-table-field-label"><?php esc_html_e( 'Hide Address:', 'the-events-calendar' ); ?></td>
+        <td>
+            <input
+                tabindex="<?php tribe_events_tab_index(); ?>"
+                type="checkbox"
+                id="EventHideAddress"
+                name="venue[EventHideAddress][]"
+                value="1"
+                <?php checked( $address_is_hidden ); ?>
+                aria-label="<?php esc_html_e( 'Hide Address?', 'the-events-calendar' ); ?>"
+        </td>
+    </tr>
+    <?php
 	if ( tribe_get_option( 'embedGoogleMaps', true ) ) { // Only show if embed option selected
 		$google_map_toggle = ( tribe_embed_google_map( $post->ID ) || get_post_status( $post->ID ) == 'auto-draft' ) ? true : false;
 		?>
@@ -236,6 +255,21 @@ if ( empty( $post->post_type ) || $post->post_type != Tribe__Events__Main::VENUE
 	</tr>
 	<?php
 } else {
+    $venue_is_hidden = ( tribe_address_is_hidden( $post->ID) || get_post_status( $post->ID ) == 'auto-draft' ) ? true : false;
+    ?>
+    <tr id="address_hidden_toggle" class="remain-visible">
+        <td class="tribe-table-field-label"><?php esc_html_e( 'Hide Address:', 'the-events-calendar' ); ?></td>
+        <td>
+            <input
+                    tabindex="<?php tribe_events_tab_index(); ?>"
+                    type="checkbox"
+                    id="VenueHideAddress"
+                    name="venue[HideAddress][]"
+                    value="true"
+                    <?php checked( $address_is_hidden ); ?>
+        </td>
+    </tr>
+    <?php
 	if ( tribe_get_option( 'embedGoogleMaps', true ) ) { // Only show if embed option selected
 
 		$google_map_toggle = ( tribe_embed_google_map( $post->ID ) || get_post_status( $post->ID ) == 'auto-draft' ) ? true : false;
